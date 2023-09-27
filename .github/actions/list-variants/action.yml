@@ -42,7 +42,7 @@ runs:
             cat > /tmp/variant-info/${variant} <<- EOF
               variants/${variant}
               packages/foo
-            EOF
+EOF
           done
           # Add the readme to one variant as a test
           echo "README.md" >> /tmp/variant-info/aws-k8s-1.28
