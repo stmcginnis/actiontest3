@@ -35,15 +35,15 @@ REPO_ROOT=$(git rev-parse  --show-toplevel)
 jq -r .[] "${HOME}/files.json" > "${CHANGED_FILES}"
 
 # Make sure there are no leftover artifacts
-rm "${OUTPUT}"
+rm -f "${OUTPUT}"
 
 cd "${REPO_ROOT}"
 cd variants
 
 output="$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$')"
 aarch="aarch-enemies=$(ls -d */ | cut -d'/' -f 1 | grep -E '(^(metal|vmware)|\-dev$)' | jq -R -s -c 'split("\n")[:-1] | [ .[] | {"variant": ., "arch": "aarch64"}]')"
-echo $aarch
-echo ${aarch@Q} >> $OUTPUT
+echo ${aarch}
+echo ${aarch} >> $OUTPUT
 
 cd ..
 
@@ -84,5 +84,5 @@ else
     output="variants=$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$' | jq -R -s -c 'split("\n")[:-1]')"
 fi
 
-echo $output
-echo ${output@Q} >> $OUTPUT
+echo ${output}
+echo ${output} >> $OUTPUT
