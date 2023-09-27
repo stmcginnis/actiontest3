@@ -10,7 +10,7 @@
 function usage {
     echo "Usage: $0 <filter> <token>"
     echo
-    echo -e "\tfilter: boolean indicating whether to return all variants (false) or only those affected by changes"
+    echo -e "\tfilter: boolean indicating whether to return all variants (false) or only those affected by changes (true)"
     echo -e "\ttoken:  GitHub token with rights to query for commit information"
     echo
     exit 1
