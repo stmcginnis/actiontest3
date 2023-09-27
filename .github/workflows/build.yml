@@ -30,6 +30,7 @@ jobs:
         id: get-variants
         with:
           filter-variants: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     needs: list-variants

@@ -5,6 +5,9 @@ inputs:
     description: "Filter the variant list based on whether the modified files affect them."
     required: false
     default: false
+  token:
+    description: "GitHub auth token to use for querying API. Only needed if filter-variants = true"
+    required: false
 outputs:
   variants:
     description: A list of all variants defined in the repo
@@ -19,7 +22,7 @@ runs:
       # This will get a list of all files changed by the PR in ${HOME}/files.json
     - uses: lots0logs/gh-action-get-changed-files@2.2.2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.token }}
     - id: get-variants
       name: Determine variants
       shell: bash
