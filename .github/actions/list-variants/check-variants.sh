@@ -71,7 +71,9 @@ if [[ "${filter}" != "false" ]]; then
         done <"/tmp/variant-info/${variant}"
     done
     #output=$(IFS=, echo "variants=[${variants[*]}]")
-    output="variants=[$(printf '"%s",'  ${variants[@]})]"
+    variants=$(printf '"%s",' ${variants[@]})
+    variants=${variants::-1}
+    output="variants=[${variants}]"
     #for variant in ${variants}; do
     #    output+="\"${variant}\","
     #done
