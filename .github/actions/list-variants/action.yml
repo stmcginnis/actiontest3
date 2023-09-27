@@ -1,0 +1,59 @@
+name: "List active variants"
+description: "Dynamically determines current Bottlerocket variants based on repo contents."
+inputs:
+  filter-variants:
+    description: "Filter the variant list based on whether the modified files affect them."
+    required: false
+    default: false
+outputs:
+  variants:
+    description: A list of all variants defined in the repo
+    value: ${{ steps.get-variants.outputs.variants }}
+  aarch-enemies:
+    description: Variants that should not run for aarch64
+    value: ${{ steps.get-variants.outputs.aarch-enemies }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+      # This will get a list of all files changed by the PR in ${HOME}/files.json
+    - uses: lots0logs/gh-action-get-changed-files@2.2.2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - id: get-variants
+      name: Determine variants
+      shell: bash
+      run: |
+        cd variants
+        output="variants=$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$' | jq -R -s -c 'split("\n")[:-1]')"
+        arch="aarch-enemies=$(ls -d */ | cut -d'/' -f 1 | grep -E '(^(metal|vmware)|\-dev$)' | jq -R -s -c 'split("\n")[:-1] | [ .[] | {"variant": ., "arch": "aarch64"}]')"
+        echo $aarch
+        echo $aarch >> $GITHUB_OUTPUT
+        cd ..
+        if [[ "${{ inputs.filter-variants }}" != "false" ]]; then
+          # Check if any of the changed files are under relevant paths for our variants
+          variants=()
+          # Use something like buildsys to emit files for each variant
+          mkdir -p /tmp/variant-info
+          for variant in ${output}; do
+            cat > /tmp/variant-info/${variant} <<- EOF
+            variants/${variant}
+            packages/foo
+            EOF
+          done
+          # Add the readme to one variant as a test
+          echo "README.md" >> /tmp/variant-info/aws-k8s-1.28
+        fi
+        for variant in ${output}; do
+          while read line; do
+            if [[ -n $(grep -e ^${line} ${{ env.HOME }}/files.json) ]]; then
+              # There are changed files under this path
+              variants += ${variant}
+              break
+          done <"/tmp/variant-info/${variant}"
+
+          output="variants='${variants[*]}'"
+        done  
+
+        echo $output
+        echo $output >> $GITHUB_OUTPUT
