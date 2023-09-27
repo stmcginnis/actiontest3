@@ -27,36 +27,4 @@ runs:
       name: Determine variants
       shell: bash
       run: |
-        cd variants
-        output="variants=$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$' | jq -R -s -c 'split("\n")[:-1]')"
-        arch="aarch-enemies=$(ls -d */ | cut -d'/' -f 1 | grep -E '(^(metal|vmware)|\-dev$)' | jq -R -s -c 'split("\n")[:-1] | [ .[] | {"variant": ., "arch": "aarch64"}]')"
-        echo $aarch
-        echo $aarch >> $GITHUB_OUTPUT
-        cd ..
-        if [[ "${{ inputs.filter-variants }}" != "false" ]]; then
-          # Check if any of the changed files are under relevant paths for our variants
-          variants=()
-          # Use something like buildsys to emit files for each variant
-          mkdir -p /tmp/variant-info
-          for variant in ${output}; do
-            cat > /tmp/variant-info/${variant} <<- EOF
-              variants/${variant}
-              packages/foo
-EOF
-          done
-          # Add the readme to one variant as a test
-          echo "README.md" >> /tmp/variant-info/aws-k8s-1.28
-        fi
-        for variant in ${output}; do
-          while read line; do
-            if [[ -n $(grep -e ^${line} ${{ env.HOME }}/files.json) ]]; then
-              # There are changed files under this path
-              variants += ${variant}
-              break
-          done <"/tmp/variant-info/${variant}"
-
-          output="variants='${variants[*]}'"
-        done  
-
-        echo $output
-        echo $output >> $GITHUB_OUTPUT
+        bash -c "${GITHUB_ACTION_PATH}/check-variants.sh"
