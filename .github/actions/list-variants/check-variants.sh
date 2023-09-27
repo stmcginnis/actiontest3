@@ -65,12 +65,18 @@ if [[ "${filter}" != "false" ]]; then
         while read line; do
             if [[ -n $(grep -e ^${line} ${CHANGED_FILES}) ]]; then
               # There are changed files under this path
-              variants+="${variant}"
+              variants+=("${variant}")
               break
             fi
         done <"/tmp/variant-info/${variant}"
     done
-    output=$(IFS=, ; echo "variants=[${variants[*]}]")
+    output=$(IFS=, echo "variants=[${variants[*]}]")
+    # output="variants=["
+    # for variant in ${variants}; do
+    #     output+="${variant}"
+    # done
+    # output=${output::-1}
+    # output+="]"
 else
     cd variants
     output="variants=$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$' | jq -R -s -c 'split("\n")[:-1]')"
