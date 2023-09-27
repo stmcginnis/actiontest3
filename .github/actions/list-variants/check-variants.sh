@@ -70,13 +70,13 @@ if [[ "${filter}" != "false" ]]; then
             fi
         done <"/tmp/variant-info/${variant}"
     done
-    output=$(IFS=, echo "variants=[${variants[*]}]")
-    # output="variants=["
-    # for variant in ${variants}; do
-    #     output+="${variant}"
-    # done
-    # output=${output::-1}
-    # output+="]"
+    #output=$(IFS=, echo "variants=[${variants[*]}]")
+    output="variants=["
+    for variant in ${variants}; do
+        output+="\"${variant}\","
+    done
+    output=${output::-1}
+    output+="]"
 else
     cd variants
     output="variants=$(ls -d */ | cut -d'/' -f 1 | grep -vE '^(shared|target)$' | jq -R -s -c 'split("\n")[:-1]')"
