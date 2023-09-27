@@ -28,3 +28,4 @@ runs:
       shell: bash
       run: |
         bash -c "${GITHUB_ACTION_PATH}/check-variants.sh"
+        cat /tmp/ghoutput >> $GITHUB_OUTPUT
