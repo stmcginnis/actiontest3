@@ -40,8 +40,8 @@ runs:
           mkdir -p /tmp/variant-info
           for variant in ${output}; do
             cat > /tmp/variant-info/${variant} <<- EOF
-            variants/${variant}
-            packages/foo
+              variants/${variant}
+              packages/foo
             EOF
           done
           # Add the readme to one variant as a test
